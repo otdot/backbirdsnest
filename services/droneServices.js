@@ -1,8 +1,10 @@
 const { DOMParser } = require("@xmldom/xmldom");
+const Cache = require("node-cache");
 const axios = require("axios");
 const { centerX, radius, centerY } = require("./XyAreaConstants");
 
 parser = new DOMParser();
+const droneCache = new Cache();
 
 const getDronePositions = async () => {
   let droneData = [];
@@ -34,15 +36,43 @@ const calculateDistance = (positionXY) => {
       Math.pow(Math.round(posY) - centerY, 2)
   );
 
-  console.log(droneInCircle);
   return droneInCircle < radius;
 };
 
 const droneInsideCircle = async () => {
   const dronePositions = await getDronePositions();
-  console.log(dronePositions);
-
   return dronePositions.filter(calculateDistance);
 };
 
-module.exports = { getDronePositions, droneInsideCircle };
+const updateDroneCache = async () => {
+  const drones = await droneInsideCircle();
+  // tämä toisin päin, ks. että uusi drone ei mätsää mihinkään vanhoista.
+  drones.forEach((drone) => {
+    const newDrone = { ...drone, ttl: 60 * 10 };
+
+    if (droneCache.has("drone-list")) {
+      if (
+        droneCache
+          .get("drone-list")
+          .every((cacheDrone) => cacheDrone.serialnum !== newDrone.serialnum)
+      ) {
+        droneCache.set("drone-list", [
+          ...droneCache.get("drone-list"),
+          newDrone,
+        ]);
+      }
+    } else {
+      droneCache.set("drone-list", [newDrone]);
+    }
+  });
+
+  if (!process.env.NODE_ENV) {
+    console.log(
+      `droneCache updated. droneCache: ${droneCache.get("drone-list")}`
+    );
+  }
+
+  return droneCache;
+};
+
+module.exports = { getDronePositions, droneInsideCircle, updateDroneCache };

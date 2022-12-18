@@ -1,12 +1,16 @@
-var express = require("express");
-const { droneInsideCircle } = require("../services/droneServices");
-var router = express.Router();
+const express = require("express");
+const { updateDroneCache } = require("../services/droneServices");
+
+const router = express.Router();
 
 /* GET users listing. */
-router.get("/", async (_req, res, _next) => {
-  const drones = await droneInsideCircle();
 
-  res.json(drones);
+router.get("/cache", async (_req, res) => {
+  const droneCache = await updateDroneCache();
+
+  return droneCache.has("drone-list")
+    ? res.json(droneCache.get("drone-list")).status(200)
+    : res.send("No drones saved in cache").status(204);
 });
 
 module.exports = router;
