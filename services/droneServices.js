@@ -6,6 +6,15 @@ const { centerX, radius, centerY } = require("./XyAreaConstants");
 parser = new DOMParser();
 const droneCache = new Cache();
 
+const getDroneOwnerDetails = async (id) => {
+  const res = await axios.get(
+    `http://assignments.reaktor.com/birdnest/pilots/${id}`
+  );
+  if (res.status === 200) {
+    return res.data;
+  }
+};
+
 const getDronePositions = async () => {
   let droneData = [];
 
@@ -44,27 +53,32 @@ const droneInsideCircle = async () => {
   return dronePositions.filter(calculateDistance);
 };
 
+const addDroneToCache = async (drone) => {
+  const droneOwnerInfo = await getDroneOwnerDetails(drone.serialnum);
+
+  if (!droneOwnerInfo) {
+    return;
+  }
+
+  const newDrone = { ...droneOwnerInfo, ttl: 60 * 10 };
+
+  if (droneCache.has("drone-list")) {
+    if (
+      droneCache
+        .get("drone-list")
+        .every((cacheDrone) => cacheDrone.pilotId !== newDrone.pilotId)
+    ) {
+      droneCache.set("drone-list", [...droneCache.get("drone-list"), newDrone]);
+    }
+  } else {
+    droneCache.set("drone-list", [newDrone]);
+  }
+};
+
 const updateDroneCache = async () => {
   const drones = await droneInsideCircle();
-  // tämä toisin päin, ks. että uusi drone ei mätsää mihinkään vanhoista.
-  drones.forEach((drone) => {
-    const newDrone = { ...drone, ttl: 60 * 10 };
 
-    if (droneCache.has("drone-list")) {
-      if (
-        droneCache
-          .get("drone-list")
-          .every((cacheDrone) => cacheDrone.serialnum !== newDrone.serialnum)
-      ) {
-        droneCache.set("drone-list", [
-          ...droneCache.get("drone-list"),
-          newDrone,
-        ]);
-      }
-    } else {
-      droneCache.set("drone-list", [newDrone]);
-    }
-  });
+  drones.forEach(addDroneToCache);
 
   if (!process.env.NODE_ENV) {
     console.log(
