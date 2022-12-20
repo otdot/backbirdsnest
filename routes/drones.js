@@ -1,7 +1,6 @@
 const express = require("express");
 const {
   updateDroneCache,
-  getDroneOwnerDetails,
   getDronePositions,
 } = require("../services/droneServices");
 
