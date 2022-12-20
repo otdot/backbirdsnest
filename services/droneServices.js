@@ -60,19 +60,11 @@ const addDroneToCache = async (drone) => {
     return;
   }
 
-  const newDrone = { ...droneOwnerInfo, ttl: 60 * 10 };
-
-  if (droneCache.has("drone-list")) {
-    if (
-      droneCache
-        .get("drone-list")
-        .every((cacheDrone) => cacheDrone.pilotId !== newDrone.pilotId)
-    ) {
-      droneCache.set("drone-list", [...droneCache.get("drone-list"), newDrone]);
-    }
-  } else {
-    droneCache.set("drone-list", [newDrone]);
+  const newDrone = { ...droneOwnerInfo, createdDt: new Date() };
+  if (!droneCache.has(newDrone.pilotId)) {
+    droneCache.set(`${newDrone.pilotId}`, newDrone, 600);
   }
+  return;
 };
 
 const updateDroneCache = async () => {
@@ -81,12 +73,15 @@ const updateDroneCache = async () => {
   drones.forEach(addDroneToCache);
 
   if (!process.env.NODE_ENV) {
-    console.log(
-      `droneCache updated. droneCache: ${droneCache.get("drone-list")}`
-    );
+    console.log(`droneCache updated.`);
   }
 
   return droneCache;
 };
 
-module.exports = { getDronePositions, droneInsideCircle, updateDroneCache };
+module.exports = {
+  getDronePositions,
+  droneInsideCircle,
+  updateDroneCache,
+  getDroneOwnerDetails,
+};

@@ -1,14 +1,24 @@
 const express = require("express");
-const { updateDroneCache } = require("../services/droneServices");
+const {
+  updateDroneCache,
+  getDroneOwnerDetails,
+  getDronePositions,
+} = require("../services/droneServices");
 
 const router = express.Router();
 
+router.get("/positions", async (_req, res) => {
+  const details = await getDronePositions();
+
+  return res.json(details).status(200);
+});
+
 router.get("/cache", async (_req, res) => {
   const droneCache = await updateDroneCache();
-
-  return droneCache.has("drone-list")
-    ? res.json(droneCache.get("drone-list")).status(200)
-    : res.send("No drones saved in cache").status(204);
+  console.log("keys: ", droneCache.keys());
+  return res
+    .json(droneCache.keys().map((key) => droneCache.get(key)))
+    .status(200);
 });
 
 router.get("/:id", async (req, res) => {
