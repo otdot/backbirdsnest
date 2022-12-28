@@ -6,6 +6,10 @@ const {
 
 const router = express.Router();
 
+router.get("/test", async (_req, res) => {
+  return res.send("test response");
+});
+
 router.get("/positions", async (_req, res) => {
   const details = await getDronePositions();
 
