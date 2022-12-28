@@ -1,13 +1,12 @@
 const serverless = require("serverless-http");
-var express = require("express");
+const express = require("express");
 const cors = require("cors");
 
-var indexRouter = require("../routes/index");
-var droneRouter = require("../routes/drones");
+const indexRouter = require("../routes/index");
+const droneRouter = require("../routes/drones");
 
-var app = express();
+const app = express();
 
-// view engine setup
 app.use(express.json());
 app.use(cors());
 
