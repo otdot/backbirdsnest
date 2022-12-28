@@ -5,7 +5,6 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
 
-const indexRouter = require("./routes/index");
 const droneRouter = require("./routes/drones");
 
 const app = express();
@@ -21,7 +20,6 @@ app.use(cookieParser());
 app.use(cors());
 app.use(express.static("dist"));
 
-app.use("/", indexRouter);
 app.use("/drones", droneRouter);
 
 // catch 404 and forward to error handler
