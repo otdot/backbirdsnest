@@ -10,7 +10,7 @@ var app = express();
 // view engine setup
 app.use(express.json());
 app.use(cors());
-app.use(express.static("dist"));
+app.use(express.static("../dist"));
 
 app.use("/.netlify/functions", indexRouter);
 app.use("/.netlify/functions/drones", droneRouter);
