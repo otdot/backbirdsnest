@@ -21,8 +21,8 @@ app.use(cookieParser());
 app.use(cors());
 app.use(express.static("../dist"));
 
-app.use("/.netlify/functions/", indexRouter);
-app.use("/.netlify/functions/drones", droneRouter);
+app.use("/.netlify/functions/api", indexRouter);
+app.use("/.netlify/functions/api/drones", droneRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
