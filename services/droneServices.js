@@ -40,6 +40,7 @@ const getDronePositions = async () => {
 
 const calculateDistance = (positionXY) => {
   const { posX, posY } = positionXY;
+  // console.log({ posX, posY });
   const droneInCircle = Math.sqrt(
     Math.pow(Math.round(posX) - centerX, 2) +
       Math.pow(Math.round(posY) - centerY, 2)
@@ -60,7 +61,12 @@ const addDroneToCache = async (drone) => {
     return;
   }
 
-  const newDrone = { ...droneOwnerInfo, createdDt: new Date() };
+  const newDrone = {
+    ...droneOwnerInfo,
+    createdDt: new Date(),
+    posX: Math.round(Number(drone.posX)),
+    posY: Math.round(Number(drone.posY)),
+  };
   if (!droneCache.has(newDrone.pilotId)) {
     droneCache.set(`${newDrone.pilotId}`, newDrone, 600);
   }
