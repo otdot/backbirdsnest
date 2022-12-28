@@ -6,14 +6,15 @@ const indexRouter = require("../routes/index");
 const droneRouter = require("../routes/drones");
 
 const app = express();
+const router = express.Router();
 
 app.use(express.json());
 app.use(cors());
 
-app.use("/.netlify/functions", indexRouter);
-app.use("/.netlify/functions/test", (_req, res) => {
+router.use("/.netlify/functions", indexRouter);
+router.use("/.netlify/functions/test", (_req, res) => {
   res.send("test response");
 });
-app.use("/.netlify/functions/drones", droneRouter);
-
+router.use("/.netlify/functions/drones", droneRouter);
+app.use("/", router);
 module.exports.handler = serverless(app);
