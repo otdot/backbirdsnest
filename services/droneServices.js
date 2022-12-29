@@ -61,14 +61,15 @@ const addDroneToCache = async (drone) => {
     return;
   }
 
-  const newDrone = {
-    ...droneOwnerInfo,
-    createdDt: new Date(),
-    posX: Math.round(Number(drone.posX)),
-    posY: Math.round(Number(drone.posY)),
-  };
-  if (!droneCache.has(newDrone.pilotId)) {
-    droneCache.set(`${newDrone.pilotId}`, newDrone, 600);
+  if (!droneCache.has(drone.serialnum)) {
+    const newDrone = {
+      ...droneOwnerInfo,
+      createdDt: new Date(),
+      posX: Math.round(Number(drone.posX)),
+      posY: Math.round(Number(drone.posY)),
+    };
+
+    droneCache.set(`${drone.serialnum}`, newDrone, 600);
   }
   return;
 };
