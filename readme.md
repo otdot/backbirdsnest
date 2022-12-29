@@ -1,4 +1,4 @@
-## Drone Tracker
+# Birdnest app backend
 
 This website tracks drones that are within a certain area. Drone info from http://assignments.reaktor.com/birdnest/drones
 
@@ -8,5 +8,11 @@ This website tracks drones that are within a certain area. Drone info from http:
 `npm install`
 `npm run dev`
 
-[Front end](https://github.com/otdot/frontbirdsnest)
-[Production](https://dronetracker.netlify.app/)
+### Front-end code
+
+- [Front-end](https://github.com/otdot/frontbirdsnest)
+
+### Deployed
+
+- [Netlify](https://dronetracker.netlify.app/)
+- [Fly.io](https://dronetracker.fly.dev/)
