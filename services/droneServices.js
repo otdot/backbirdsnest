@@ -38,20 +38,23 @@ const getDronePositions = async () => {
   return droneData;
 };
 
-const calculateDistance = (positionXY) => {
-  const { posX, posY } = positionXY;
-  // console.log({ posX, posY });
-  const droneInCircle = Math.sqrt(
+const calculateDistance = (droneinfo) => {
+  const { posX, posY } = droneinfo;
+  const droneDistanceFromCenter = Math.sqrt(
     Math.pow(Math.round(posX) - centerX, 2) +
       Math.pow(Math.round(posY) - centerY, 2)
   );
-
-  return droneInCircle < radius;
+  return {
+    ...droneinfo,
+    droneDistanceFromCenter: Math.round(droneDistanceFromCenter),
+  };
 };
 
 const droneInsideCircle = async () => {
   const dronePositions = await getDronePositions();
-  return dronePositions.filter(calculateDistance);
+  return dronePositions
+    .map(calculateDistance)
+    .filter(({ droneDistanceFromCenter }) => droneDistanceFromCenter < radius);
 };
 
 const addDroneToCache = async (drone) => {
@@ -67,11 +70,17 @@ const addDroneToCache = async (drone) => {
       createdDt: new Date(),
       posX: Math.round(Number(drone.posX)),
       posY: Math.round(Number(drone.posY)),
+      droneDistanceFromCenter: drone.droneDistanceFromCenter,
     };
 
     droneCache.set(`${drone.serialnum}`, newDrone, 600);
+  } else if (
+    droneCache.has(drone.serialnum) &&
+    droneCache.get(drone.serialnum).droneDistanceFromCenter <
+      drone.droneDistanceFromCenter
+  ) {
+    console.log("drone closer to nest");
   }
-  return;
 };
 
 const updateDroneCache = async () => {
