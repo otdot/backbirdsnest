@@ -64,7 +64,12 @@ const addDroneToCache = async (drone) => {
     return;
   }
 
-  if (!droneCache.has(drone.serialnum)) {
+  if (
+    !droneCache.has(drone.serialnum) ||
+    (droneCache.has(drone.serialnum) &&
+      drone.droneDistanceFromCenter <
+        droneCache.get(drone.serialnum).droneDistanceFromCenter)
+  ) {
     const newDrone = {
       ...droneOwnerInfo,
       createdDt: new Date(),
@@ -74,12 +79,7 @@ const addDroneToCache = async (drone) => {
     };
 
     droneCache.set(`${drone.serialnum}`, newDrone, 600);
-  } else if (
-    droneCache.has(drone.serialnum) &&
-    droneCache.get(drone.serialnum).droneDistanceFromCenter <
-      drone.droneDistanceFromCenter
-  ) {
-    console.log("drone closer to nest");
+    //Check that data from else if logs
   }
 };
 
